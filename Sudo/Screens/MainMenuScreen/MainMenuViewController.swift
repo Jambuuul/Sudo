@@ -19,6 +19,11 @@ final class MainMenuViewController: UIViewController {
 		static let buttonHorizontal: CGFloat = 40
 		static let buttonDistance: CGFloat = 20
 		static let buttonsBottomInset: CGFloat = 24
+		static let buttonCornerRadius: CGFloat = 12
+		static let buttonHeight: CGFloat = 70
+		static let buttonAlpha: CGFloat = 0.8
+		static let buttonFontSize: CGFloat = 24
+		static let newGameCenterYOffset: CGFloat = 10
 
 		//difficulty
 		static let difficultyTitle: String = "Select difficulty"
@@ -29,8 +34,13 @@ final class MainMenuViewController: UIViewController {
 		static let difficultyExpertTitle: String = "Expert"
 		static let difficultyMasterTitle: String = "Master"
 		static let difficultyCancelTitle: String = "Cancel"
-		
+
 		static let rulesLink: String = "https://sudoku.com/sudoku-rules"
+		static let titleText: String = "Sudo."
+		static let titleFontSize: CGFloat = 48
+		static let titleBottomSpacing: CGFloat = 50
+		static let newGameTitle: String = "New Game"
+		static let howToPlayTitle: String = "How to Play"
 		//TODO: fonts into consts
     }
 
@@ -75,12 +85,12 @@ final class MainMenuViewController: UIViewController {
 		view.addSubview(newGameButton)
 		
 		//design
-		newGameButton.backgroundColor = .systemIndigo.withAlphaComponent(0.8)
-		newGameButton.layer.cornerRadius = 12
+		newGameButton.backgroundColor = .systemIndigo.withAlphaComponent(Const.buttonAlpha)
+		newGameButton.layer.cornerRadius = Const.buttonCornerRadius
 		
 		//title
-		newGameButton.setTitle("New Game", for: .normal)
-		newGameButton.titleLabel?.font = .systemFont(ofSize: 24, weight: .semibold)
+		newGameButton.setTitle(Const.newGameTitle, for: .normal)
+		newGameButton.titleLabel?.font = .systemFont(ofSize: Const.buttonFontSize, weight: .semibold)
 		newGameButton.titleLabel?.textAlignment = .center
 		newGameButton.titleLabel?.tintColor = .white
 		
@@ -88,34 +98,34 @@ final class MainMenuViewController: UIViewController {
 		
 		
 		//constraints
-		newGameButton.pinCenterY(to: view, 10)
+		newGameButton.pinCenterY(to: view, Const.newGameCenterYOffset)
 		newGameButton.pinLeft(to: view, Const.buttonHorizontal)
 		newGameButton.pinRight(to: view, Const.buttonHorizontal)
-		newGameButton.setHeight(70)
+		newGameButton.setHeight(Const.buttonHeight)
 	}
 	
 	private func configureTitleLabel() {
 		view.addSubview(titleLabel)
-		titleLabel.text = "Sudo."
-		titleLabel.font = .systemFont(ofSize: 48, weight: .semibold)
+		titleLabel.text = Const.titleText
+		titleLabel.font = .systemFont(ofSize: Const.titleFontSize, weight: .semibold)
 		titleLabel.textAlignment = .center
 		
 		// constraints
 		titleLabel.pinLeft(to: view, Const.buttonHorizontal)
 		titleLabel.pinRight(to: view, Const.buttonHorizontal)
-		titleLabel.pinBottom(to: newGameButton.topAnchor, 50)
+		titleLabel.pinBottom(to: newGameButton.topAnchor, Const.titleBottomSpacing)
 	}
 	
 	private func configureRulesButton() {
 		view.addSubview(showRulesButton)
 		
 		//design
-		showRulesButton.backgroundColor = .systemIndigo.withAlphaComponent(0.8)
-		showRulesButton.layer.cornerRadius = 12
+		showRulesButton.backgroundColor = .systemIndigo.withAlphaComponent(Const.buttonAlpha)
+		showRulesButton.layer.cornerRadius = Const.buttonCornerRadius
 		
 		//title
-		showRulesButton.setTitle("How to Play", for: .normal)
-		showRulesButton.titleLabel?.font = .systemFont(ofSize: 24, weight: .semibold)
+		showRulesButton.setTitle(Const.howToPlayTitle, for: .normal)
+		showRulesButton.titleLabel?.font = .systemFont(ofSize: Const.buttonFontSize, weight: .semibold)
 		showRulesButton.titleLabel?.textAlignment = .center
 		showRulesButton.titleLabel?.tintColor = .white
 		
@@ -126,7 +136,7 @@ final class MainMenuViewController: UIViewController {
 		showRulesButton.pinTop(to: newGameButton.bottomAnchor, Const.buttonDistance)
 		showRulesButton.pinLeft(to: view, Const.buttonHorizontal)
 		showRulesButton.pinRight(to: view, Const.buttonHorizontal)
-		showRulesButton.setHeight(70)
+		showRulesButton.setHeight(Const.buttonHeight)
 		showRulesButton.pinBottom(to: view.safeAreaLayoutGuide.bottomAnchor, Const.buttonsBottomInset, .lsOE)
 	}
 	

@@ -30,6 +30,7 @@ final class BoardViewController: UIViewController {
 		
 		static let titleFontSize: CGFloat = 20
 		static let timeFontSize: CGFloat = 16
+		static let timeLabelHeight: CGFloat = 20
 		static let statusFontSize: CGFloat = 16
 		static let digitButtonFontSize: CGFloat = 22
 		static let clearButtonFontSize: CGFloat = 18
@@ -145,7 +146,7 @@ final class BoardViewController: UIViewController {
 		timeLabel.font = .systemFont(ofSize: Const.timeFontSize, weight: .semibold)
 		timeLabel.textColor = .secondaryLabel
 		timeLabel.text = TimeFormatter.makeTimeText(elapsedSeconds: 0)
-		timeLabel.setHeight(20)
+		timeLabel.setHeight(Const.timeLabelHeight)
 		
 		timeLabel.pinTop(to: titleLabel.bottomAnchor, Const.titleToTimeSpacing)
 		timeLabel.pinLeft(to: view, Const.horizontalInset)

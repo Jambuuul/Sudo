@@ -29,6 +29,8 @@ final class SavedGamesViewController: UIViewController {
 		static let emptyCustomText: String = "No custom puzzles yet."
 		static let cellIdentifier: String = "SavedGameCell"
 		static let rowHeight: CGFloat = 64
+		static let emptyFontSize: CGFloat = 16
+		static let emptyLabelOffset: CGFloat = -40
 	}
 
 	// MARK: - Fields
@@ -120,10 +122,10 @@ final class SavedGamesViewController: UIViewController {
 		emptyLabel.text = Const.emptyText
 		emptyLabel.textAlignment = .center
 		emptyLabel.textColor = .secondaryLabel
-		emptyLabel.font = .systemFont(ofSize: 16, weight: .regular)
+		emptyLabel.font = .systemFont(ofSize: Const.emptyFontSize, weight: .regular)
 
 		emptyLabel.pinCenterX(to: view)
-		emptyLabel.pinCenterY(to: view, -40)
+		emptyLabel.pinCenterY(to: view, Const.emptyLabelOffset)
 	}
 
 

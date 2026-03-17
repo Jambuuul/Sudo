@@ -175,7 +175,6 @@ internal struct SolverCore {
 	}
 	
 	// MARK: - Crook-style Propagation
-	
 	private mutating func propagate(level: PropagationLevel) -> Bool {
 		while true {
 			if !constrainCandidates() { return false }
