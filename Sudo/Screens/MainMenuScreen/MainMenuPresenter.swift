@@ -23,7 +23,9 @@ final class MainMenuPresenter: MainMenuPresentationLogic {
     }
 	
 	func presentNewGame(_ response: Model.NewGame.Response) {
-        let boardViewController: UIViewController = BoardAssembly.build()
+        let boardViewController: UIViewController = BoardAssembly.build(
+			source: .newGame(difficulty: response.difficulty)
+		)
 
         if let navigationController: UINavigationController = view?.navigationController {
             navigationController.pushViewController(boardViewController, animated: true)

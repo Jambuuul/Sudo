@@ -9,9 +9,12 @@
 import UIKit
 
 enum BoardAssembly {
-    static func build() -> UIViewController {
+    static func build(source: BoardStartSource = .newGame(difficulty: .easy)) -> UIViewController {
 		let presenter: BoardPresenter = BoardPresenter()
-		let interactor: BoardBusinessLogic = BoardInteractor(presenter: presenter)
+		let interactor: BoardBusinessLogic = BoardInteractor(
+			presenter: presenter,
+			source: source
+		)
 		let viewController: BoardViewController = BoardViewController(
             interactor: interactor
         )

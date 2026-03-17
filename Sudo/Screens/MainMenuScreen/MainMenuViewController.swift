@@ -18,7 +18,19 @@ final class MainMenuViewController: UIViewController {
 		//button
 		static let buttonHorizontal: CGFloat = 40
 		static let buttonDistance: CGFloat = 20
+		static let buttonsBottomInset: CGFloat = 24
+
+		//difficulty
+		static let difficultyTitle: String = "Select difficulty"
+		static let difficultyVeryEasyTitle: String = "Very Easy"
+		static let difficultyEasyTitle: String = "Easy"
+		static let difficultyMediumTitle: String = "Medium"
+		static let difficultyHardTitle: String = "Hard"
+		static let difficultyExpertTitle: String = "Expert"
+		static let difficultyMasterTitle: String = "Master"
+		static let difficultyCancelTitle: String = "Cancel"
 		
+		static let rulesLink: String = "https://sudoku.com/sudoku-rules"
 		//TODO: fonts into consts
     }
 
@@ -31,6 +43,7 @@ final class MainMenuViewController: UIViewController {
 	
 	//labels
 	private let titleLabel: UILabel = UILabel()
+
 
     // MARK: - LifeCycle
     init(
@@ -52,7 +65,7 @@ final class MainMenuViewController: UIViewController {
     }
 
     // MARK: - Setup
-    private func configureUI() {
+	private func configureUI() {
 		configureNewGameButton()
 		configureTitleLabel()
 		configureRulesButton()
@@ -106,7 +119,7 @@ final class MainMenuViewController: UIViewController {
 		showRulesButton.titleLabel?.textAlignment = .center
 		showRulesButton.titleLabel?.tintColor = .white
 		
-		showRulesButton.addTarget(self, action: #selector(newGameButtonPressed), for: .touchUpInside)
+		showRulesButton.addTarget(self, action: #selector(rulesButtonPressed), for: .touchUpInside)
 		
 		
 		//constraints
@@ -114,13 +127,85 @@ final class MainMenuViewController: UIViewController {
 		showRulesButton.pinLeft(to: view, Const.buttonHorizontal)
 		showRulesButton.pinRight(to: view, Const.buttonHorizontal)
 		showRulesButton.setHeight(70)
+		showRulesButton.pinBottom(to: view.safeAreaLayoutGuide.bottomAnchor, Const.buttonsBottomInset, .lsOE)
 	}
 	
 
     // MARK: - Actions
     @objc
-    private func newGameButtonPressed() {
-		interactor.loadNewGame(.init())
+	private func newGameButtonPressed() {
+		presentDifficultyPicker()
     }
+	
+	@objc
+	private func rulesButtonPressed() {
+		guard let url = URL(string: Const.rulesLink) else {
+			return
+		}
+		let vc = HowToPlayViewController(url: url)
+		navigationController?.pushViewController(vc, animated: true)
+	}
 
+
+	// MARK: - Private methods
+	private func presentDifficultyPicker() {
+		let alert: UIAlertController = UIAlertController(
+			title: Const.difficultyTitle,
+			message: nil,
+			preferredStyle: .actionSheet
+		)
+		
+		let veryEasyAction: UIAlertAction = makeDifficultyAction(
+			title: Const.difficultyVeryEasyTitle,
+			difficulty: .veryEasy
+		)
+		let easyAction: UIAlertAction = makeDifficultyAction(
+			title: Const.difficultyEasyTitle,
+			difficulty: .easy
+		)
+		let mediumAction: UIAlertAction = makeDifficultyAction(
+			title: Const.difficultyMediumTitle,
+			difficulty: .medium
+		)
+		let hardAction: UIAlertAction = makeDifficultyAction(
+			title: Const.difficultyHardTitle,
+			difficulty: .hard
+		)
+		let expertAction: UIAlertAction = makeDifficultyAction(
+			title: Const.difficultyExpertTitle,
+			difficulty: .expert
+		)
+		let masterAction: UIAlertAction = makeDifficultyAction(
+			title: Const.difficultyMasterTitle,
+			difficulty: .master
+		)
+		let cancelAction: UIAlertAction = UIAlertAction(
+			title: Const.difficultyCancelTitle,
+			style: .cancel
+		)
+		
+		alert.addAction(veryEasyAction)
+		alert.addAction(easyAction)
+		alert.addAction(mediumAction)
+		alert.addAction(hardAction)
+		alert.addAction(expertAction)
+		alert.addAction(masterAction)
+		alert.addAction(cancelAction)
+		
+		if let popover = alert.popoverPresentationController {
+			popover.sourceView = newGameButton
+			popover.sourceRect = newGameButton.bounds
+		}
+		
+		present(alert, animated: true)
+	}
+
+	private func makeDifficultyAction(
+		title: String,
+		difficulty: SudokuDifficulty
+	) -> UIAlertAction {
+		return UIAlertAction(title: title, style: .default) { [weak self] _ in
+			self?.interactor.loadNewGame(.init(difficulty: difficulty))
+		}
+	}
 }

@@ -54,7 +54,7 @@ struct SudokuBoard {
         self = Self.makeDefaultBoard()
     }
 
-    private init(template: PuzzleTemplate) {
+    init(template: PuzzleTemplate) {
         cells = Self.makeCells(from: template)
     }
 

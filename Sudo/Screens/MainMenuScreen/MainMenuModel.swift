@@ -14,8 +14,14 @@ enum MainMenuModel {
     }
 	
 	enum NewGame {
-		struct Request { }
-		struct Response { }
+		struct Request {
+			let difficulty: SudokuDifficulty
+		}
+
+		struct Response {
+			let difficulty: SudokuDifficulty
+		}
+
 		struct ViewModel { }
 	}
 

@@ -17,6 +17,7 @@ final class BoardCollectionViewCell: UICollectionViewCell {
         static let borderColor: UIColor = .separator
         static let selectedBackgroundColor: UIColor = UIColor.systemBlue.withAlphaComponent(0.2)
         static let matchingValueBackgroundColor: UIColor = UIColor.systemYellow.withAlphaComponent(0.25)
+		static let duplicateRowColumnBackgroundColor: UIColor = UIColor.systemRed.withAlphaComponent(0.12)
         static let givenBackgroundColor: UIColor = .tertiarySystemBackground
         static let editableBackgroundColor: UIColor = .systemBackground
         static let givenTextColor: UIColor = .label
@@ -145,6 +146,10 @@ final class BoardCollectionViewCell: UICollectionViewCell {
         if viewModel.isMatchingSelectedValue {
             return Const.matchingValueBackgroundColor
         }
+
+		if viewModel.isInDuplicateRowOrColumn {
+			return Const.duplicateRowColumnBackgroundColor
+		}
 
         return viewModel.isGiven ? Const.givenBackgroundColor : Const.editableBackgroundColor
     }

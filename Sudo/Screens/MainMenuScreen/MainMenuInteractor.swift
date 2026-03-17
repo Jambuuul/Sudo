@@ -21,6 +21,6 @@ final class MainMenuInteractor: MainMenuBusinessLogic {
     }
 	
 	func loadNewGame(_ request: Model.NewGame.Request) {
-		presenter.presentNewGame(.init())
+		presenter.presentNewGame(.init(difficulty: request.difficulty))
 	}
 }

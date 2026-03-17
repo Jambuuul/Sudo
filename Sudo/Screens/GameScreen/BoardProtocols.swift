@@ -12,6 +12,7 @@ protocol BoardBusinessLogic {
     func selectCell(_ request: Model.SelectCell.Request)
     func inputDigit(_ request: Model.InputDigit.Request)
     func clearCell(_ request: Model.ClearCell.Request)
+	func saveGame(_ request: Model.SaveGame.Request)
     // func load(_ request: Model..Request)
 }
 
@@ -19,6 +20,8 @@ protocol BoardPresentationLogic {
     typealias Model = BoardModel
     func presentStart(_ response: Model.Start.Response)
     func presentBoardChanged(_ response: Model.BoardChanged.Response)
+	func presentTimerTick(_ response: Model.TimerTick.Response)
+	func presentSaveGame(_ response: Model.SaveGame.Response)
     // func present(_ response: Model..Response)
 }
 
@@ -26,4 +29,6 @@ protocol BoardDisplayLogic: AnyObject {
     typealias Model = BoardModel
     func displayStart(_ viewModel: Model.Start.ViewModel)
     func displayBoardChanged(_ viewModel: Model.BoardChanged.ViewModel)
+	func displayTimerTick(_ viewModel: Model.TimerTick.ViewModel)
+	func displaySaveGame(_ viewModel: Model.SaveGame.ViewModel)
 }

@@ -17,6 +17,8 @@ enum BoardModel {
         let cells: [CellState]
         let selectedIndex: Int?
         let isSolved: Bool
+		let elapsedSeconds: Int
+		let difficulty: SudokuDifficulty
     }
 
     struct CellViewModel {
@@ -25,11 +27,13 @@ enum BoardModel {
         let isSelected: Bool
         let isIncorrect: Bool
         let isMatchingSelectedValue: Bool
+		let isInDuplicateRowOrColumn: Bool
     }
 
     struct BoardViewModel {
         let titleText: String
         let statusText: String
+		let timeText: String
         let cells: [CellViewModel]
         let hasSelection: Bool
         let isSolved: Bool
@@ -56,6 +60,16 @@ enum BoardModel {
         }
     }
 
+	enum TimerTick {
+		struct Response {
+			let elapsedSeconds: Int
+		}
+
+		struct ViewModel {
+			let timeText: String
+		}
+	}
+
     enum SelectCell {
         struct Request {
             let index: Int
@@ -71,6 +85,19 @@ enum BoardModel {
     enum ClearCell {
         struct Request { }
     }
+
+	enum SaveGame {
+		struct Request { }
+
+		struct Response {
+			let isSaved: Bool
+		}
+
+		struct ViewModel {
+			let title: String
+			let message: String
+		}
+	}
 
     //    enum Other {
     //        struct Request { }

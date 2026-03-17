@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 		let nav = UINavigationController(
-			rootViewController: MainMenuAssembly.build()
+			rootViewController: RootAssembly.build()
 		)
 		window.rootViewController = nav
         self.window = window
@@ -56,4 +56,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
 }
-
