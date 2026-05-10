@@ -86,6 +86,10 @@ struct SudokuBoard {
             return false
         }
 
+		if cells[index].value == cells[index].solution {
+			return false
+		}
+
         if let value {
             guard Self.digits.contains(value) else {
                 return false

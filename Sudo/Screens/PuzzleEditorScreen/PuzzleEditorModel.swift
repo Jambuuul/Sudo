@@ -13,6 +13,7 @@ enum PuzzleEditorModel {
 	struct EditorState {
 		let cells: [CellState]
 		let selectedIndex: Int?
+		let nameText: String
 		let statusText: String
 	}
 
@@ -23,6 +24,7 @@ enum PuzzleEditorModel {
 
 	struct EditorViewModel {
 		let titleText: String
+		let nameText: String
 		let statusText: String
 		let cells: [CellViewModel]
 		let hasSelection: Bool
@@ -75,7 +77,9 @@ enum PuzzleEditorModel {
 	}
 
 	enum Save {
-		struct Request { }
+		struct Request {
+			let name: String
+		}
 		struct Response {
 			let isSaved: Bool
 		}

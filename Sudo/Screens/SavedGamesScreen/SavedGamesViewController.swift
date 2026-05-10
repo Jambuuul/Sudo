@@ -223,8 +223,8 @@ extension SavedGamesViewController: UITableViewDataSource {
 			let timeText: String = TimeFormatter.makeTimeText(elapsedSeconds: game.elapsedSeconds)
 			let filledText: String = "\(filledCount(for: game))/81"
 
-			cell.textLabel?.text = "\(difficultyText) • \(timeText)"
-			cell.detailTextLabel?.text = "Filled: \(filledText)"
+			cell.textLabel?.text = game.name
+			cell.detailTextLabel?.text = "\(difficultyText) • \(timeText) • Filled: \(filledText)"
 			cell.accessoryType = .disclosureIndicator
 		} else if isCreateRow(indexPath) {
 			cell.textLabel?.text = Const.createPuzzleTitle
@@ -232,7 +232,7 @@ extension SavedGamesViewController: UITableViewDataSource {
 			cell.accessoryType = .disclosureIndicator
 		} else {
 			let puzzle: UserPuzzle = puzzles[indexPath.row]
-			cell.textLabel?.text = Const.customPuzzleTitle
+			cell.textLabel?.text = puzzle.name.isEmpty ? Const.customPuzzleTitle : puzzle.name
 			cell.detailTextLabel?.text = makePuzzleSubtitle(puzzle)
 			cell.accessoryType = .disclosureIndicator
 		}

@@ -23,8 +23,13 @@ final class BoardCollectionViewCell: UICollectionViewCell {
         static let givenTextColor: UIColor = .label
         static let editableTextColor: UIColor = .systemBlue
         static let incorrectTextColor: UIColor = .systemRed
+		static let cageSumTextColor: UIColor = .secondaryLabel
+		static let cageBorderColor: UIColor = UIColor.label.withAlphaComponent(0.45)
+		static let cageBorderWidth: CGFloat = 2
         static let givenFontSize: CGFloat = 20
         static let editableFontSize: CGFloat = 21
+		static let cageSumFontSize: CGFloat = 9
+		static let cageSumInset: CGFloat = 3
         static let cornerRadius: CGFloat = 0
     }
 
@@ -33,15 +38,21 @@ final class BoardCollectionViewCell: UICollectionViewCell {
 
     // MARK: - Fields
     private let valueLabel: UILabel = UILabel()
+	private let sumLabel: UILabel = UILabel()
     private let topBorder: CALayer = CALayer()
     private let leftBorder: CALayer = CALayer()
     private let bottomBorder: CALayer = CALayer()
     private let rightBorder: CALayer = CALayer()
+	private let cageTopBorder: CALayer = CALayer()
+	private let cageLeftBorder: CALayer = CALayer()
+	private let cageBottomBorder: CALayer = CALayer()
+	private let cageRightBorder: CALayer = CALayer()
 
     private var topBorderWidth: CGFloat = Const.thinBorderWidth
     private var leftBorderWidth: CGFloat = Const.thinBorderWidth
     private var bottomBorderWidth: CGFloat = Const.thinBorderWidth
     private var rightBorderWidth: CGFloat = Const.thinBorderWidth
+	private var cageBorders: BoardModel.CageBorders?
 
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -57,6 +68,8 @@ final class BoardCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         valueLabel.text = nil
+		sumLabel.text = nil
+		cageBorders = nil
     }
 
     override func layoutSubviews() {
@@ -69,6 +82,9 @@ final class BoardCollectionViewCell: UICollectionViewCell {
         valueLabel.text = viewModel.valueText
         valueLabel.textColor = makeTextColor(for: viewModel)
         valueLabel.font = makeFont(for: viewModel)
+		sumLabel.text = viewModel.cageSumText
+		sumLabel.isHidden = viewModel.cageSumText == nil
+		cageBorders = viewModel.cageBorders
         contentView.backgroundColor = makeBackgroundColor(for: viewModel)
         contentView.layer.cornerRadius = Const.cornerRadius
 
@@ -81,8 +97,19 @@ final class BoardCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(valueLabel)
         valueLabel.textAlignment = .center
         valueLabel.pin(to: contentView)
+		configureSumLabel()
         configureBorderLayers()
+		configureCageBorderLayers()
     }
+
+	private func configureSumLabel() {
+		contentView.addSubview(sumLabel)
+		sumLabel.font = .systemFont(ofSize: Const.cageSumFontSize, weight: .semibold)
+		sumLabel.textColor = Const.cageSumTextColor
+		sumLabel.textAlignment = .left
+		sumLabel.pinTop(to: contentView, Const.cageSumInset)
+		sumLabel.pinLeft(to: contentView, Const.cageSumInset)
+	}
 
     private func configureBorderLayers() {
         let borders: [CALayer] = [topBorder, leftBorder, bottomBorder, rightBorder]
@@ -91,6 +118,14 @@ final class BoardCollectionViewCell: UICollectionViewCell {
             contentView.layer.addSublayer(border)
         }
     }
+
+	private func configureCageBorderLayers() {
+		let borders: [CALayer] = [cageTopBorder, cageLeftBorder, cageBottomBorder, cageRightBorder]
+		for border in borders {
+			border.backgroundColor = Const.cageBorderColor.cgColor
+			contentView.layer.addSublayer(border)
+		}
+	}
 
     private func updateBorderWidth(index: Int, boardSize: Int) {
         let row: Int = index / boardSize
@@ -136,7 +171,45 @@ final class BoardCollectionViewCell: UICollectionViewCell {
             width: rightBorderWidth,
             height: contentView.bounds.height
         )
+
+		updateCageBordersLayout()
     }
+
+	private func updateCageBordersLayout() {
+		let borders: BoardModel.CageBorders? = cageBorders
+		cageTopBorder.isHidden = borders?.showsTop != true
+		cageLeftBorder.isHidden = borders?.showsLeft != true
+		cageBottomBorder.isHidden = borders?.showsBottom != true
+		cageRightBorder.isHidden = borders?.showsRight != true
+
+		cageTopBorder.frame = CGRect(
+			x: Const.zero,
+			y: Const.zero,
+			width: contentView.bounds.width,
+			height: Const.cageBorderWidth
+		)
+
+		cageLeftBorder.frame = CGRect(
+			x: Const.zero,
+			y: Const.zero,
+			width: Const.cageBorderWidth,
+			height: contentView.bounds.height
+		)
+
+		cageBottomBorder.frame = CGRect(
+			x: Const.zero,
+			y: contentView.bounds.height - Const.cageBorderWidth,
+			width: contentView.bounds.width,
+			height: Const.cageBorderWidth
+		)
+
+		cageRightBorder.frame = CGRect(
+			x: contentView.bounds.width - Const.cageBorderWidth,
+			y: Const.zero,
+			width: Const.cageBorderWidth,
+			height: contentView.bounds.height
+		)
+	}
 
     private func makeBackgroundColor(for viewModel: BoardModel.CellViewModel) -> UIColor {
         if viewModel.isSelected {

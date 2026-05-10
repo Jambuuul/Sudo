@@ -58,6 +58,8 @@ final class PuzzleEditorViewController: UIViewController {
 		static let importPlaceholder: String = "Paste code"
 		static let importActionTitle: String = "Import"
 		static let copyTitle: String = "Copy"
+		static let saveAlertTitle: String = "Puzzle Name"
+		static let saveNamePlaceholder: String = "Name"
 	}
 
 	// MARK: - Fields
@@ -65,6 +67,7 @@ final class PuzzleEditorViewController: UIViewController {
 	private var cellViewModels: [BoardModel.CellViewModel] = []
 	private var digitButtons: [UIButton] = []
 	private var hasSelection: Bool = false
+	private var puzzleName: String = ""
 
 	// MARK: - Views
 	private let titleLabel: UILabel = UILabel()
@@ -270,7 +273,7 @@ final class PuzzleEditorViewController: UIViewController {
 
 	@objc
 	private func saveButtonPressed() {
-		interactor.savePuzzle(.init())
+		presentSavePrompt()
 	}
 
 	@objc
@@ -338,6 +341,7 @@ final class PuzzleEditorViewController: UIViewController {
 	private func applyBoardViewModel(_ viewModel: Model.EditorViewModel) {
 		titleLabel.text = viewModel.titleText
 		statusLabel.text = viewModel.statusText
+		puzzleName = viewModel.nameText
 		hasSelection = viewModel.hasSelection
 		cellViewModels = viewModel.cells.map { cell in
 			BoardModel.CellViewModel(
@@ -346,7 +350,9 @@ final class PuzzleEditorViewController: UIViewController {
 				isSelected: cell.isSelected,
 				isIncorrect: false,
 				isMatchingSelectedValue: false,
-				isInDuplicateRowOrColumn: false
+				isInDuplicateRowOrColumn: false,
+				cageSumText: nil,
+				cageBorders: nil
 			)
 		}
 		boardCollectionView.reloadData()
@@ -376,6 +382,24 @@ final class PuzzleEditorViewController: UIViewController {
 			self?.interactor.importPuzzle(.init(code: code))
 		})
 		alert.addAction(UIAlertAction(title: Const.okTitle, style: .cancel))
+		present(alert, animated: true)
+	}
+
+	private func presentSavePrompt() {
+		let alert: UIAlertController = UIAlertController(
+			title: Const.saveAlertTitle,
+			message: nil,
+			preferredStyle: .alert
+		)
+		alert.addTextField { [weak self] textField in
+			textField.placeholder = Const.saveNamePlaceholder
+			textField.text = self?.puzzleName
+		}
+		alert.addAction(UIAlertAction(title: Const.saveTitle, style: .default) { [weak self] _ in
+			let name: String = alert.textFields?.first?.text ?? ""
+			self?.interactor.savePuzzle(.init(name: name))
+		})
+		alert.addAction(UIAlertAction(title: Const.cancelTitle, style: .cancel))
 		present(alert, animated: true)
 	}
 

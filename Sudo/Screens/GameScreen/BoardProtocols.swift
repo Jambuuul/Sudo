@@ -11,7 +11,7 @@ protocol BoardBusinessLogic {
     func loadStart(_ request: Model.Start.Request)
     func selectCell(_ request: Model.SelectCell.Request)
     func inputDigit(_ request: Model.InputDigit.Request)
-    func clearCell(_ request: Model.ClearCell.Request)
+	func clearCell(_ request: Model.ClearCell.Request)
 	func saveGame(_ request: Model.SaveGame.Request)
     // func load(_ request: Model..Request)
 }
@@ -22,6 +22,7 @@ protocol BoardPresentationLogic {
     func presentBoardChanged(_ response: Model.BoardChanged.Response)
 	func presentTimerTick(_ response: Model.TimerTick.Response)
 	func presentSaveGame(_ response: Model.SaveGame.Response)
+	func presentGameSolved(_ response: Model.GameSolved.Response)
     // func present(_ response: Model..Response)
 }
 
@@ -31,4 +32,5 @@ protocol BoardDisplayLogic: AnyObject {
     func displayBoardChanged(_ viewModel: Model.BoardChanged.ViewModel)
 	func displayTimerTick(_ viewModel: Model.TimerTick.ViewModel)
 	func displaySaveGame(_ viewModel: Model.SaveGame.ViewModel)
+	func displayGameSolved(_ viewModel: Model.GameSolved.ViewModel)
 }

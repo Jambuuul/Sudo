@@ -43,6 +43,8 @@ final class BoardViewController: UIViewController {
 		static let controlButtonCornerRadius: CGFloat = 12
 		static let controlDisabledAlpha: CGFloat = 0.45
 		static let controlEnabledAlpha: CGFloat = 1
+		static let digitButtonBackgroundColor: UIColor = .systemIndigo
+		static let completedDigitButtonBackgroundColor: UIColor = .tertiarySystemBackground
 		static let controlsGridHeight: CGFloat =
 		(controlButtonHeight * CGFloat(controlGridRows)) +
 		(controlGridSpacing * CGFloat(controlGridRows - 1))
@@ -55,6 +57,10 @@ final class BoardViewController: UIViewController {
 		static let saveButtonCornerRadius: CGFloat = 12
 		static let saveButtonTitle: String = "Save Game"
 		static let alertOkTitle: String = "OK"
+		static let saveAlertTitle: String = "Save Game"
+		static let saveNamePlaceholder: String = "Name"
+		static let saveAlertActionTitle: String = "Save"
+		static let cancelTitle: String = "Cancel"
 		
 		static let solvedStatusColor: UIColor = .systemGreen
 		static let defaultStatusColor: UIColor = .secondaryLabel
@@ -64,6 +70,8 @@ final class BoardViewController: UIViewController {
 	private let interactor: BoardBusinessLogic
 	private var cellViewModels: [Model.CellViewModel] = []
 	private var digitButtons: [UIButton] = []
+	private var completedDigits: Set<Int> = []
+	private var gameName: String = ""
 	
 	// MARK: - Views
 	private let titleLabel: UILabel = UILabel()
@@ -252,18 +260,18 @@ final class BoardViewController: UIViewController {
 		clearButton.setHeight(Const.clearButtonHeight)
 		clearButton.pinBottom(to: view.safeAreaLayoutGuide.bottomAnchor, Const.bottomInset, .lsOE)
 		
-		updateControlsState(hasSelection: false, isSolved: false)
+		updateControlsState(hasSelection: false, isSolved: false, completedDigits: [])
 	}
 	
 	private func makeDigitButton(digit: Int) -> UIButton {
 		let button: UIButton = UIButton(type: .system)
 		button.tag = digit
-		button.backgroundColor = .systemIndigo.withAlphaComponent(0.85)
+		button.backgroundColor = Const.digitButtonBackgroundColor.withAlphaComponent(0.85)
 		button.layer.cornerRadius = Const.controlButtonCornerRadius
 		button.setTitle(String(digit), for: .normal)
 		button.titleLabel?.font = .systemFont(ofSize: Const.digitButtonFontSize, weight: .semibold)
 		button.setTitleColor(.white, for: .normal)
-		button.setTitleColor(.white.withAlphaComponent(0.7), for: .disabled)
+		button.setTitleColor(.secondaryLabel, for: .disabled)
 		button.setHeight(Const.controlButtonHeight)
 		button.addTarget(self, action: #selector(digitButtonPressed(_:)), for: .touchUpInside)
 		return button
@@ -282,31 +290,66 @@ final class BoardViewController: UIViewController {
 
 	@objc
 	private func saveButtonPressed() {
-		interactor.saveGame(.init())
+		presentSavePrompt()
 	}
 	
 	// MARK: - Private methods
 	private func applyBoardViewModel(_ viewModel: Model.BoardViewModel) {
 		titleLabel.text = viewModel.titleText
+		gameName = viewModel.gameName
 		statusLabel.text = viewModel.statusText
 		statusLabel.textColor = viewModel.isSolved ? Const.solvedStatusColor : Const.defaultStatusColor
 		timeLabel.text = viewModel.timeText
 		cellViewModels = viewModel.cells
+		completedDigits = viewModel.completedDigits
 		boardCollectionView.reloadData()
-		updateControlsState(hasSelection: viewModel.hasSelection, isSolved: viewModel.isSolved)
+		updateControlsState(
+			hasSelection: viewModel.hasSelection,
+			isSolved: viewModel.isSolved,
+			completedDigits: viewModel.completedDigits
+		)
 	}
 	
-	private func updateControlsState(hasSelection: Bool, isSolved: Bool) {
+	private func updateControlsState(
+		hasSelection: Bool,
+		isSolved: Bool,
+		completedDigits: Set<Int>
+	) {
 		let controlsEnabled: Bool = hasSelection && !isSolved
-		let alpha: CGFloat = controlsEnabled ? Const.controlEnabledAlpha : Const.controlDisabledAlpha
 		
 		for button in digitButtons {
-			button.isEnabled = controlsEnabled
-			button.alpha = alpha
+			let isCompleted: Bool = completedDigits.contains(button.tag)
+			let backgroundColor: UIColor
+			if isCompleted {
+				backgroundColor = Const.completedDigitButtonBackgroundColor
+			} else {
+				backgroundColor = Const.digitButtonBackgroundColor.withAlphaComponent(0.85)
+			}
+			button.isEnabled = controlsEnabled && !isCompleted
+			button.backgroundColor = backgroundColor
+			button.alpha = (button.isEnabled || isCompleted) ? Const.controlEnabledAlpha : Const.controlDisabledAlpha
 		}
 		
 		clearButton.isEnabled = controlsEnabled
-		clearButton.alpha = alpha
+		clearButton.alpha = controlsEnabled ? Const.controlEnabledAlpha : Const.controlDisabledAlpha
+	}
+
+	private func presentSavePrompt() {
+		let alert: UIAlertController = UIAlertController(
+			title: Const.saveAlertTitle,
+			message: nil,
+			preferredStyle: .alert
+		)
+		alert.addTextField { [weak self] textField in
+			textField.placeholder = Const.saveNamePlaceholder
+			textField.text = self?.gameName
+		}
+		alert.addAction(UIAlertAction(title: Const.saveAlertActionTitle, style: .default) { [weak self] _ in
+			let name: String = alert.textFields?.first?.text ?? ""
+			self?.interactor.saveGame(.init(name: name))
+		})
+		alert.addAction(UIAlertAction(title: Const.cancelTitle, style: .cancel))
+		present(alert, animated: true)
 	}
 }
 
@@ -325,6 +368,16 @@ extension BoardViewController: BoardDisplayLogic {
 	}
 
 	func displaySaveGame(_ viewModel: Model.SaveGame.ViewModel) {
+		let alert: UIAlertController = UIAlertController(
+			title: viewModel.title,
+			message: viewModel.message,
+			preferredStyle: .alert
+		)
+		alert.addAction(UIAlertAction(title: Const.alertOkTitle, style: .default))
+		present(alert, animated: true)
+	}
+
+	func displayGameSolved(_ viewModel: Model.GameSolved.ViewModel) {
 		let alert: UIAlertController = UIAlertController(
 			title: viewModel.title,
 			message: viewModel.message,

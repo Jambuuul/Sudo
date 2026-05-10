@@ -11,7 +11,39 @@ struct UserPuzzle: Codable, Equatable {
 	let id: UUID
 	let createdAt: Date
 	let updatedAt: Date
+	let name: String
 	let puzzle: [[Int]]
+
+	private enum CodingKeys: String, CodingKey {
+		case id
+		case createdAt
+		case updatedAt
+		case name
+		case puzzle
+	}
+
+	init(
+		id: UUID,
+		createdAt: Date,
+		updatedAt: Date,
+		name: String,
+		puzzle: [[Int]]
+	) {
+		self.id = id
+		self.createdAt = createdAt
+		self.updatedAt = updatedAt
+		self.name = name
+		self.puzzle = puzzle
+	}
+
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+		id = try container.decode(UUID.self, forKey: .id)
+		createdAt = try container.decode(Date.self, forKey: .createdAt)
+		updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+		name = try container.decodeIfPresent(String.self, forKey: .name) ?? "Custom Puzzle"
+		puzzle = try container.decode([[Int]].self, forKey: .puzzle)
+	}
 }
 
 final class UserPuzzleStore {

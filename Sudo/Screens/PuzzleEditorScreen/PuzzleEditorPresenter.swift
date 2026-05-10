@@ -98,6 +98,7 @@ final class PuzzleEditorPresenter: PuzzleEditorPresentationLogic {
 
 		return Model.EditorViewModel(
 			titleText: Const.titleText,
+			nameText: state.nameText,
 			statusText: state.statusText,
 			cells: cells,
 			hasSelection: hasSelection

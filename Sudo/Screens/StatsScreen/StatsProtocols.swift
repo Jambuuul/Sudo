@@ -7,10 +7,15 @@
 
 protocol StatsBusinessLogic {
 	typealias Model = StatsModel
-	func loadStart(_ request: Model.Start.Request)
+	func loadStats(_ request: Model.LoadStats.Request)
 }
 
 protocol StatsPresentationLogic {
 	typealias Model = StatsModel
-	func presentStart(_ response: Model.Start.Response)
+	func presentStats(_ response: Model.LoadStats.Response)
+}
+
+protocol StatsDisplayLogic: AnyObject {
+	typealias Model = StatsModel
+	func displayStats(_ viewModel: Model.LoadStats.ViewModel)
 }

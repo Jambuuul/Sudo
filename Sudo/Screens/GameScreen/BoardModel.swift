@@ -18,7 +18,10 @@ enum BoardModel {
         let selectedIndex: Int?
         let isSolved: Bool
 		let elapsedSeconds: Int
+		let mistakeCount: Int
 		let difficulty: SudokuDifficulty
+		let gameName: String
+		let killerCages: [KillerCage]
     }
 
     struct CellViewModel {
@@ -28,14 +31,25 @@ enum BoardModel {
         let isIncorrect: Bool
         let isMatchingSelectedValue: Bool
 		let isInDuplicateRowOrColumn: Bool
+		let cageSumText: String?
+		let cageBorders: CageBorders?
     }
+
+	struct CageBorders {
+		let showsTop: Bool
+		let showsLeft: Bool
+		let showsBottom: Bool
+		let showsRight: Bool
+	}
 
     struct BoardViewModel {
         let titleText: String
+		let gameName: String
         let statusText: String
 		let timeText: String
         let cells: [CellViewModel]
         let hasSelection: Bool
+		let completedDigits: Set<Int>
         let isSolved: Bool
     }
 
@@ -87,10 +101,23 @@ enum BoardModel {
     }
 
 	enum SaveGame {
-		struct Request { }
+		struct Request {
+			let name: String
+		}
 
 		struct Response {
 			let isSaved: Bool
+		}
+
+		struct ViewModel {
+			let title: String
+			let message: String
+		}
+	}
+
+	enum GameSolved {
+		struct Response {
+			let state: GameState
 		}
 
 		struct ViewModel {
