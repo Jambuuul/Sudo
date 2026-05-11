@@ -18,7 +18,9 @@ enum BoardModel {
         let selectedIndex: Int?
         let isSolved: Bool
 		let elapsedSeconds: Int
+		let mistakeCount: Int
 		let difficulty: SudokuDifficulty
+		let gameName: String
     }
 
     struct CellViewModel {
@@ -32,10 +34,12 @@ enum BoardModel {
 
     struct BoardViewModel {
         let titleText: String
+		let gameName: String
         let statusText: String
 		let timeText: String
         let cells: [CellViewModel]
         let hasSelection: Bool
+		let completedDigits: Set<Int>
         let isSolved: Bool
     }
 
@@ -87,10 +91,23 @@ enum BoardModel {
     }
 
 	enum SaveGame {
-		struct Request { }
+		struct Request {
+			let name: String
+		}
 
 		struct Response {
 			let isSaved: Bool
+		}
+
+		struct ViewModel {
+			let title: String
+			let message: String
+		}
+	}
+
+	enum GameSolved {
+		struct Response {
+			let state: GameState
 		}
 
 		struct ViewModel {

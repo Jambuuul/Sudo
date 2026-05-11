@@ -13,6 +13,7 @@ final class PuzzleEditorInteractor: PuzzleEditorBusinessLogic {
 		static let sideLength: Int = SudokuBoard.sideLength
 		static let cellCount: Int = SudokuBoard.sideLength * SudokuBoard.sideLength
 		static let defaultStatus: String = "Fill the grid or import a code."
+		static let defaultPuzzleName: String = "Custom Puzzle"
 		static let validationTimeoutSeconds: TimeInterval = 5
 		static let invalidSizeMessage: String = "Puzzle size is invalid."
 		static let invalidValueMessage: String = "Puzzle has invalid values."
@@ -27,6 +28,7 @@ final class PuzzleEditorInteractor: PuzzleEditorBusinessLogic {
 	private let createdAt: Date
 	private var selectedIndex: Int?
 	private var cells: [Int?]
+	private var puzzleName: String
 	private var statusText: String
 	private var validationToken: UUID?
 
@@ -41,11 +43,13 @@ final class PuzzleEditorInteractor: PuzzleEditorBusinessLogic {
 			self.puzzleId = UUID()
 			self.createdAt = Date()
 			self.cells = Array(repeating: nil, count: Const.cellCount)
+			self.puzzleName = Const.defaultPuzzleName
 			self.statusText = Const.defaultStatus
 		case .existing(let puzzle):
 			self.puzzleId = puzzle.id
 			self.createdAt = puzzle.createdAt
 			self.cells = PuzzleEditorInteractor.flatten(puzzle.puzzle)
+			self.puzzleName = puzzle.name
 			self.statusText = Const.defaultStatus
 		}
 	}
@@ -94,12 +98,15 @@ final class PuzzleEditorInteractor: PuzzleEditorBusinessLogic {
 
 	func savePuzzle(_ request: Model.Save.Request) {
 		let now: Date = Date()
+		let name: String = request.name.trimmingCharacters(in: .whitespacesAndNewlines)
 		let puzzle: UserPuzzle = UserPuzzle(
 			id: puzzleId,
 			createdAt: createdAt,
 			updatedAt: now,
+			name: name.isEmpty ? Const.defaultPuzzleName : name,
 			puzzle: makeGrid()
 		)
+		puzzleName = puzzle.name
 		UserPuzzleStore.shared.save(puzzle)
 		presenter.presentSave(.init(isSaved: true))
 	}
@@ -143,6 +150,7 @@ final class PuzzleEditorInteractor: PuzzleEditorBusinessLogic {
 		return Model.EditorState(
 			cells: cellStates,
 			selectedIndex: selectedIndex,
+			nameText: puzzleName,
 			statusText: statusText
 		)
 	}

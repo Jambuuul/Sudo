@@ -26,7 +26,11 @@ final class MainMenuViewController: UIViewController {
 		static let newGameCenterYOffset: CGFloat = 10
 
 		//difficulty
+		static let sourceTitle: String = "New Game"
+		static let localSourceTitle: String = "Create Locally"
+		static let networkSourceTitle: String = "Load from Network"
 		static let difficultyTitle: String = "Select difficulty"
+		static let networkDifficultyTitle: String = "Select network difficulty"
 		static let difficultyVeryEasyTitle: String = "Very Easy"
 		static let difficultyEasyTitle: String = "Easy"
 		static let difficultyMediumTitle: String = "Medium"
@@ -41,7 +45,6 @@ final class MainMenuViewController: UIViewController {
 		static let titleBottomSpacing: CGFloat = 50
 		static let newGameTitle: String = "New Game"
 		static let howToPlayTitle: String = "How to Play"
-		//TODO: fonts into consts
     }
 
     // MARK: - Fields
@@ -144,7 +147,7 @@ final class MainMenuViewController: UIViewController {
     // MARK: - Actions
     @objc
 	private func newGameButtonPressed() {
-		presentDifficultyPicker()
+		presentSourcePicker()
     }
 	
 	@objc
@@ -158,48 +161,108 @@ final class MainMenuViewController: UIViewController {
 
 
 	// MARK: - Private methods
-	private func presentDifficultyPicker() {
+	private func presentSourcePicker() {
 		let alert: UIAlertController = UIAlertController(
-			title: Const.difficultyTitle,
+			title: Const.sourceTitle,
+			message: nil,
+			preferredStyle: .actionSheet
+		)
+
+		let localAction: UIAlertAction = UIAlertAction(
+			title: Const.localSourceTitle,
+			style: .default
+		) { [weak self] _ in
+			self?.presentDifficultyPickerAfterSource(source: .local)
+		}
+		let networkAction: UIAlertAction = UIAlertAction(
+			title: Const.networkSourceTitle,
+			style: .default
+		) { [weak self] _ in
+			self?.presentDifficultyPickerAfterSource(source: .network)
+		}
+		let cancelAction: UIAlertAction = UIAlertAction(
+			title: Const.difficultyCancelTitle,
+			style: .cancel
+		)
+
+		alert.addAction(localAction)
+		alert.addAction(networkAction)
+		alert.addAction(cancelAction)
+
+		if let popover = alert.popoverPresentationController {
+			popover.sourceView = newGameButton
+			popover.sourceRect = newGameButton.bounds
+		}
+
+		present(alert, animated: true)
+	}
+
+	private func presentDifficultyPickerAfterSource(source: Model.NewGameSource) {
+		guard let presented: UIViewController = presentedViewController else {
+			presentDifficultyPicker(source: source)
+			return
+		}
+
+		presented.dismiss(animated: true) { [weak self] in
+			self?.presentDifficultyPicker(source: source)
+		}
+	}
+
+	private func presentDifficultyPicker(source: Model.NewGameSource) {
+		let alert: UIAlertController = UIAlertController(
+			title: makeDifficultyTitle(source: source),
 			message: nil,
 			preferredStyle: .actionSheet
 		)
 		
-		let veryEasyAction: UIAlertAction = makeDifficultyAction(
-			title: Const.difficultyVeryEasyTitle,
-			difficulty: .veryEasy
-		)
 		let easyAction: UIAlertAction = makeDifficultyAction(
 			title: Const.difficultyEasyTitle,
-			difficulty: .easy
+			difficulty: .easy,
+			source: source
 		)
 		let mediumAction: UIAlertAction = makeDifficultyAction(
 			title: Const.difficultyMediumTitle,
-			difficulty: .medium
+			difficulty: .medium,
+			source: source
 		)
 		let hardAction: UIAlertAction = makeDifficultyAction(
 			title: Const.difficultyHardTitle,
-			difficulty: .hard
-		)
-		let expertAction: UIAlertAction = makeDifficultyAction(
-			title: Const.difficultyExpertTitle,
-			difficulty: .expert
-		)
-		let masterAction: UIAlertAction = makeDifficultyAction(
-			title: Const.difficultyMasterTitle,
-			difficulty: .master
+			difficulty: .hard,
+			source: source
 		)
 		let cancelAction: UIAlertAction = UIAlertAction(
 			title: Const.difficultyCancelTitle,
 			style: .cancel
 		)
 		
-		alert.addAction(veryEasyAction)
+		if case .local = source {
+			let veryEasyAction: UIAlertAction = makeDifficultyAction(
+				title: Const.difficultyVeryEasyTitle,
+				difficulty: .veryEasy,
+				source: source
+			)
+			alert.addAction(veryEasyAction)
+		}
+
 		alert.addAction(easyAction)
 		alert.addAction(mediumAction)
 		alert.addAction(hardAction)
-		alert.addAction(expertAction)
-		alert.addAction(masterAction)
+
+		if case .local = source {
+			let expertAction: UIAlertAction = makeDifficultyAction(
+				title: Const.difficultyExpertTitle,
+				difficulty: .expert,
+				source: source
+			)
+			let masterAction: UIAlertAction = makeDifficultyAction(
+				title: Const.difficultyMasterTitle,
+				difficulty: .master,
+				source: source
+			)
+			alert.addAction(expertAction)
+			alert.addAction(masterAction)
+		}
+
 		alert.addAction(cancelAction)
 		
 		if let popover = alert.popoverPresentationController {
@@ -212,10 +275,25 @@ final class MainMenuViewController: UIViewController {
 
 	private func makeDifficultyAction(
 		title: String,
-		difficulty: SudokuDifficulty
+		difficulty: SudokuDifficulty,
+		source: Model.NewGameSource
 	) -> UIAlertAction {
 		return UIAlertAction(title: title, style: .default) { [weak self] _ in
-			self?.interactor.loadNewGame(.init(difficulty: difficulty))
+			self?.interactor.loadNewGame(
+				.init(
+					difficulty: difficulty,
+					source: source
+				)
+			)
+		}
+	}
+
+	private func makeDifficultyTitle(source: Model.NewGameSource) -> String {
+		switch source {
+		case .local:
+			return Const.difficultyTitle
+		case .network:
+			return Const.networkDifficultyTitle
 		}
 	}
 }

@@ -11,11 +11,64 @@ struct SavedGame: Codable, Equatable {
 	let id: UUID
 	let createdAt: Date
 	let updatedAt: Date
+	let name: String
 	let difficulty: SudokuDifficulty
 	let puzzle: [[Int]]
 	let solution: [[Int]]
 	let current: [[Int]]
 	let elapsedSeconds: Int
+	let mistakeCount: Int
+
+	private enum CodingKeys: String, CodingKey {
+		case id
+		case createdAt
+		case updatedAt
+		case name
+		case difficulty
+		case puzzle
+		case solution
+		case current
+		case elapsedSeconds
+		case mistakeCount
+	}
+
+	init(
+		id: UUID,
+		createdAt: Date,
+		updatedAt: Date,
+		name: String,
+		difficulty: SudokuDifficulty,
+		puzzle: [[Int]],
+		solution: [[Int]],
+		current: [[Int]],
+		elapsedSeconds: Int,
+		mistakeCount: Int
+	) {
+		self.id = id
+		self.createdAt = createdAt
+		self.updatedAt = updatedAt
+		self.name = name
+		self.difficulty = difficulty
+		self.puzzle = puzzle
+		self.solution = solution
+		self.current = current
+		self.elapsedSeconds = elapsedSeconds
+		self.mistakeCount = mistakeCount
+	}
+
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+		id = try container.decode(UUID.self, forKey: .id)
+		createdAt = try container.decode(Date.self, forKey: .createdAt)
+		updatedAt = try container.decode(Date.self, forKey: .updatedAt)
+		name = try container.decodeIfPresent(String.self, forKey: .name) ?? "Saved Game"
+		difficulty = try container.decode(SudokuDifficulty.self, forKey: .difficulty)
+		puzzle = try container.decode([[Int]].self, forKey: .puzzle)
+		solution = try container.decode([[Int]].self, forKey: .solution)
+		current = try container.decode([[Int]].self, forKey: .current)
+		elapsedSeconds = try container.decode(Int.self, forKey: .elapsedSeconds)
+		mistakeCount = try container.decodeIfPresent(Int.self, forKey: .mistakeCount) ?? 0
+	}
 }
 
 final class SavedGameStore {

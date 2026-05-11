@@ -14,6 +14,8 @@ final class BoardPresenter: BoardPresentationLogic {
         static let inProgressStatusText: String = "Select a cell and fill digits 1...9."
 		static let saveTitle: String = "Saved"
 		static let saveMessage: String = "Game saved successfully."
+		static let solvedTitle: String = "Victory"
+		static let solvedMessageFormat: String = "Difficulty: %@\nTime: %@\nMistakes: %d"
 		static let boardSize: Int = SudokuBoard.sideLength
     }
 
@@ -54,6 +56,24 @@ final class BoardPresenter: BoardPresentationLogic {
 		)
 	}
 
+	func presentGameSolved(_ response: Model.GameSolved.Response) {
+		let difficultyText: String = makeDifficultyTitle(response.state.difficulty)
+		let timeText: String = TimeFormatter.makeTimeText(elapsedSeconds: response.state.elapsedSeconds)
+		let message: String = String(
+			format: Const.solvedMessageFormat,
+			difficultyText,
+			timeText,
+			response.state.mistakeCount
+		)
+
+		view?.displayGameSolved(
+			Model.GameSolved.ViewModel(
+				title: Const.solvedTitle,
+				message: message
+			)
+		)
+	}
+
     // MARK: - Private methods
     private func makeBoardViewModel(from state: Model.GameState) -> Model.BoardViewModel {
         let selectedIndex: Int? = state.selectedIndex
@@ -76,9 +96,12 @@ final class BoardPresenter: BoardPresentationLogic {
                 return false
             }
 
-            return !state.cells[selectedIndex].isGiven
+			let selectedCell: Model.CellState = state.cells[selectedIndex]
+			let isCorrectFilled: Bool = selectedCell.value != nil && !selectedCell.isIncorrect
+            return !selectedCell.isGiven && !isCorrectFilled
         }()
 
+		let completedDigits: Set<Int> = makeCompletedDigits(cells: state.cells)
 		let duplicateRowsAndColumns: (rows: Set<Int>, columns: Set<Int>) = makeDuplicateRowsAndColumns(
 			cells: state.cells,
 			selectedValue: selectedValue
@@ -103,10 +126,12 @@ final class BoardPresenter: BoardPresentationLogic {
 
         return Model.BoardViewModel(
             titleText: makeDifficultyTitle(state.difficulty),
+			gameName: state.gameName,
             statusText: state.isSolved ? Const.solvedStatusText : Const.inProgressStatusText,
 			timeText: TimeFormatter.makeTimeText(elapsedSeconds: state.elapsedSeconds),
             cells: cells,
             hasSelection: hasEditableSelection,
+			completedDigits: completedDigits,
             isSolved: state.isSolved
         )
     }
@@ -164,5 +189,24 @@ final class BoardPresenter: BoardPresentationLogic {
 		}
 
 		return (rows: rows, columns: columns)
+	}
+
+	private func makeCompletedDigits(cells: [Model.CellState]) -> Set<Int> {
+		var counts: [Int: Int] = [:]
+
+		for cell in cells {
+			guard let value: Int = cell.value, !cell.isIncorrect else {
+				continue
+			}
+
+			counts[value, default: 0] += 1
+		}
+
+		var result: Set<Int> = []
+		for digit in SudokuBoard.digits where counts[digit] == Const.boardSize {
+			result.insert(digit)
+		}
+
+		return result
 	}
 }

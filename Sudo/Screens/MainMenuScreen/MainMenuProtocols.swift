@@ -20,6 +20,10 @@ protocol MainMenuPresentationLogic {
     func presentStart(_ response: Model.Start.Response)
 	
 	func presentNewGame(_ response: Model.NewGame.Response)
+
+	func presentNetworkLoading(_ response: Model.NetworkLoading.Response)
+
+	func presentNetworkFailure(_ response: Model.NetworkFailure.Response)
 	
     // func present(_ response: Model..Response)
 	
