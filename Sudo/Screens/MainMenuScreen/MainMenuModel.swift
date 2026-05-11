@@ -10,7 +10,6 @@ enum MainMenuModel {
 	enum NewGameSource {
 		case local
 		case network
-		case killerNetwork
 	}
 
     enum Start {
@@ -29,7 +28,6 @@ enum MainMenuModel {
 			let difficulty: SudokuDifficulty
 			let puzzle: [[Int]]?
 			let solution: [[Int]]?
-			let cages: [KillerCage]?
 		}
 
 		struct ViewModel { }

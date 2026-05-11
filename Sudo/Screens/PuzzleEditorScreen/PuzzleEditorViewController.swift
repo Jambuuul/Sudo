@@ -350,9 +350,7 @@ final class PuzzleEditorViewController: UIViewController {
 				isSelected: cell.isSelected,
 				isIncorrect: false,
 				isMatchingSelectedValue: false,
-				isInDuplicateRowOrColumn: false,
-				cageSumText: nil,
-				cageBorders: nil
+				isInDuplicateRowOrColumn: false
 			)
 		}
 		boardCollectionView.reloadData()

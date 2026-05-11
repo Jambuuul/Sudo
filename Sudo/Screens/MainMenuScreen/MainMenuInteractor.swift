@@ -33,14 +33,11 @@ final class MainMenuInteractor: MainMenuBusinessLogic {
 				.init(
 					difficulty: request.difficulty,
 					puzzle: nil,
-					solution: nil,
-					cages: nil
+					solution: nil
 				)
 			)
 		case .network:
 			loadNetworkGame(difficulty: request.difficulty)
-		case .killerNetwork:
-			loadNetworkKillerGame(difficulty: request.difficulty)
 		}
 	}
 
@@ -68,43 +65,7 @@ final class MainMenuInteractor: MainMenuBusinessLogic {
 						.init(
 							difficulty: difficulty,
 							puzzle: puzzle.puzzle,
-							solution: puzzle.solution,
-							cages: nil
-						)
-					)
-				}
-			} catch {
-				await MainActor.run {
-					presenter.presentNetworkFailure(.init())
-				}
-			}
-		}
-	}
-
-	private func loadNetworkKillerGame(difficulty: SudokuDifficulty) {
-		networkTask?.cancel()
-		presenter.presentNetworkLoading(.init())
-
-		networkTask = Task { [weak self] in
-			guard let self else {
-				return
-			}
-
-			do {
-				let puzzle: NetworkKillerPuzzle = try await networkPuzzleService.loadKillerPuzzle(
-					difficulty: difficulty
-				)
-				let cages: [KillerCage] = puzzle.cages.map {
-					KillerCage(id: $0.id, sum: $0.sum, cells: $0.cells)
-				}
-
-				await MainActor.run {
-					presenter.presentNewGame(
-						.init(
-							difficulty: difficulty,
-							puzzle: puzzle.puzzle,
-							solution: puzzle.solution,
-							cages: cages
+							solution: puzzle.solution
 						)
 					)
 				}

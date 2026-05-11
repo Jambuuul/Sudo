@@ -21,7 +21,6 @@ enum BoardModel {
 		let mistakeCount: Int
 		let difficulty: SudokuDifficulty
 		let gameName: String
-		let killerCages: [KillerCage]
     }
 
     struct CellViewModel {
@@ -31,16 +30,7 @@ enum BoardModel {
         let isIncorrect: Bool
         let isMatchingSelectedValue: Bool
 		let isInDuplicateRowOrColumn: Bool
-		let cageSumText: String?
-		let cageBorders: CageBorders?
     }
-
-	struct CageBorders {
-		let showsTop: Bool
-		let showsLeft: Bool
-		let showsBottom: Bool
-		let showsRight: Bool
-	}
 
     struct BoardViewModel {
         let titleText: String

@@ -17,7 +17,6 @@ final class BoardInteractor: BoardBusinessLogic {
     private var board: SudokuBoard
 	private var elapsedSeconds: Int
 	private var mistakeCount: Int
-	private let killerCages: [KillerCage]
     private var selectedIndex: Int?
 	private var timer: Timer?
 	private var didRecordStats: Bool = false
@@ -35,7 +34,6 @@ final class BoardInteractor: BoardBusinessLogic {
 			self.gameName = BoardInteractor.makeDefaultGameName(difficulty: difficulty)
 			self.elapsedSeconds = 0
 			self.mistakeCount = 0
-			self.killerCages = []
 			self.board = BoardInteractor.makeBoard(difficulty: difficulty)
 		case .savedGame(let game):
 			self.gameId = game.id
@@ -43,7 +41,6 @@ final class BoardInteractor: BoardBusinessLogic {
 			self.gameName = game.name
 			self.elapsedSeconds = game.elapsedSeconds
 			self.mistakeCount = game.mistakeCount
-			self.killerCages = game.killerCages
 			self.board = BoardInteractor.makeBoard(from: game)
 		case .customPuzzle(let puzzle, let solution):
 			self.gameId = UUID()
@@ -51,7 +48,6 @@ final class BoardInteractor: BoardBusinessLogic {
 			self.gameName = BoardInteractor.makeDefaultGameName(difficulty: .custom)
 			self.elapsedSeconds = 0
 			self.mistakeCount = 0
-			self.killerCages = []
 			self.board = BoardInteractor.makeBoard(puzzle: puzzle, solution: solution)
 		case .networkPuzzle(let difficulty, let puzzle, let solution):
 			self.gameId = UUID()
@@ -59,15 +55,6 @@ final class BoardInteractor: BoardBusinessLogic {
 			self.gameName = BoardInteractor.makeDefaultGameName(difficulty: difficulty)
 			self.elapsedSeconds = 0
 			self.mistakeCount = 0
-			self.killerCages = []
-			self.board = BoardInteractor.makeBoard(puzzle: puzzle, solution: solution)
-		case .killerPuzzle(let difficulty, let puzzle, let solution, let cages):
-			self.gameId = UUID()
-			self.difficulty = difficulty
-			self.gameName = BoardInteractor.makeDefaultKillerGameName(difficulty: difficulty)
-			self.elapsedSeconds = 0
-			self.mistakeCount = 0
-			self.killerCages = cages
 			self.board = BoardInteractor.makeBoard(puzzle: puzzle, solution: solution)
 		}
     }
@@ -150,8 +137,7 @@ final class BoardInteractor: BoardBusinessLogic {
 			solution: makeSolutionValues(),
 			current: makeCurrentValues(),
 			elapsedSeconds: elapsedSeconds,
-			mistakeCount: mistakeCount,
-			killerCages: killerCages
+			mistakeCount: mistakeCount
 		)
 
 		SavedGameStore.shared.save(game)
@@ -230,8 +216,7 @@ final class BoardInteractor: BoardBusinessLogic {
 			elapsedSeconds: elapsedSeconds,
 			mistakeCount: mistakeCount,
 			difficulty: difficulty,
-			gameName: gameName,
-			killerCages: killerCages
+			gameName: gameName
         )
     }
 
@@ -361,9 +346,5 @@ final class BoardInteractor: BoardBusinessLogic {
 		case .custom:
 			return "Custom Game"
 		}
-	}
-
-	private static func makeDefaultKillerGameName(difficulty: SudokuDifficulty) -> String {
-		"Killer \(makeDefaultGameName(difficulty: difficulty))"
 	}
 }

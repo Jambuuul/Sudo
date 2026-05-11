@@ -29,16 +29,7 @@ final class MainMenuPresenter: MainMenuPresentationLogic {
 	func presentNewGame(_ response: Model.NewGame.Response) {
 		let source: BoardStartSource
 		if let puzzle: [[Int]] = response.puzzle,
-		   let solution: [[Int]] = response.solution,
-		   let cages: [KillerCage] = response.cages {
-			source = .killerPuzzle(
-				difficulty: response.difficulty,
-				puzzle: puzzle,
-				solution: solution,
-				cages: cages
-			)
-		} else if let puzzle: [[Int]] = response.puzzle,
-				  let solution: [[Int]] = response.solution {
+		   let solution: [[Int]] = response.solution {
 			source = .networkPuzzle(
 				difficulty: response.difficulty,
 				puzzle: puzzle,

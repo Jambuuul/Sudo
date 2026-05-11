@@ -16,11 +16,8 @@ final class BoardPresenter: BoardPresentationLogic {
 		static let saveMessage: String = "Game saved successfully."
 		static let solvedTitle: String = "Victory"
 		static let solvedMessageFormat: String = "Difficulty: %@\nTime: %@\nMistakes: %d"
-		static let killerTitleFormat: String = "Killer %@"
 		static let boardSize: Int = SudokuBoard.sideLength
     }
-
-	private typealias CageInfo = (sumText: String?, borders: Model.CageBorders)
 
     weak var view: BoardDisplayLogic?
 
@@ -109,7 +106,6 @@ final class BoardPresenter: BoardPresentationLogic {
 			cells: state.cells,
 			selectedValue: selectedValue
 		)
-		let cageInfoByIndex: [Int: CageInfo] = makeCageInfoByIndex(cages: state.killerCages)
 
         let cells: [Model.CellViewModel] = state.cells.enumerated().map { index, cell in
 			let row: Int = index / Const.boardSize
@@ -117,22 +113,19 @@ final class BoardPresenter: BoardPresentationLogic {
 			let isInDuplicateRowOrColumn: Bool =
 			duplicateRowsAndColumns.rows.contains(row) ||
 			duplicateRowsAndColumns.columns.contains(column)
-			let cageInfo: CageInfo? = cageInfoByIndex[index]
 
 			return Model.CellViewModel(
                 valueText: cell.value.map(String.init) ?? "",
                 isGiven: cell.isGiven,
                 isSelected: selectedIndex == index,
                 isIncorrect: cell.isIncorrect,
-				isMatchingSelectedValue: cell.value != nil && cell.value == selectedValue,
-				isInDuplicateRowOrColumn: isInDuplicateRowOrColumn,
-				cageSumText: cageInfo?.sumText,
-				cageBorders: cageInfo?.borders
+                isMatchingSelectedValue: cell.value != nil && cell.value == selectedValue,
+				isInDuplicateRowOrColumn: isInDuplicateRowOrColumn
             )
         }
 
         return Model.BoardViewModel(
-            titleText: makeTitle(difficulty: state.difficulty, hasKillerCages: !state.killerCages.isEmpty),
+            titleText: makeDifficultyTitle(state.difficulty),
 			gameName: state.gameName,
             statusText: state.isSolved ? Const.solvedStatusText : Const.inProgressStatusText,
 			timeText: TimeFormatter.makeTimeText(elapsedSeconds: state.elapsedSeconds),
@@ -160,15 +153,6 @@ final class BoardPresenter: BoardPresentationLogic {
 		case .custom:
 			return "Custom"
 		}
-	}
-
-	private func makeTitle(difficulty: SudokuDifficulty, hasKillerCages: Bool) -> String {
-		let difficultyTitle: String = makeDifficultyTitle(difficulty)
-		guard hasKillerCages else {
-			return difficultyTitle
-		}
-
-		return String(format: Const.killerTitleFormat, difficultyTitle)
 	}
 
 	private func makeDuplicateRowsAndColumns(
@@ -221,50 +205,6 @@ final class BoardPresenter: BoardPresentationLogic {
 		var result: Set<Int> = []
 		for digit in SudokuBoard.digits where counts[digit] == Const.boardSize {
 			result.insert(digit)
-		}
-
-		return result
-	}
-
-	private func makeCageInfoByIndex(cages: [KillerCage]) -> [Int: CageInfo] {
-		var result: [Int: CageInfo] = [:]
-		let cageIDByIndex: [Int: Int] = makeCageIDByIndex(cages: cages)
-
-		for cage in cages {
-			guard let firstCell: Int = cage.cells.min() else {
-				continue
-			}
-
-			for cell in cage.cells {
-				let row: Int = cell / Const.boardSize
-				let column: Int = cell % Const.boardSize
-				let topIndex: Int = cell - Const.boardSize
-				let leftIndex: Int = cell - 1
-				let bottomIndex: Int = cell + Const.boardSize
-				let rightIndex: Int = cell + 1
-
-				result[cell] = (
-					sumText: cell == firstCell ? String(cage.sum) : nil,
-					borders: Model.CageBorders(
-						showsTop: row == 0 || cageIDByIndex[topIndex] != cage.id,
-						showsLeft: column == 0 || cageIDByIndex[leftIndex] != cage.id,
-						showsBottom: row == Const.boardSize - 1 || cageIDByIndex[bottomIndex] != cage.id,
-						showsRight: column == Const.boardSize - 1 || cageIDByIndex[rightIndex] != cage.id
-					)
-				)
-			}
-		}
-
-		return result
-	}
-
-	private func makeCageIDByIndex(cages: [KillerCage]) -> [Int: Int] {
-		var result: [Int: Int] = [:]
-
-		for cage in cages {
-			for cell in cage.cells {
-				result[cell] = cage.id
-			}
 		}
 
 		return result

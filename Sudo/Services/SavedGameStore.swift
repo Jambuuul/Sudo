@@ -18,7 +18,6 @@ struct SavedGame: Codable, Equatable {
 	let current: [[Int]]
 	let elapsedSeconds: Int
 	let mistakeCount: Int
-	let killerCages: [KillerCage]
 
 	private enum CodingKeys: String, CodingKey {
 		case id
@@ -31,7 +30,6 @@ struct SavedGame: Codable, Equatable {
 		case current
 		case elapsedSeconds
 		case mistakeCount
-		case killerCages
 	}
 
 	init(
@@ -44,8 +42,7 @@ struct SavedGame: Codable, Equatable {
 		solution: [[Int]],
 		current: [[Int]],
 		elapsedSeconds: Int,
-		mistakeCount: Int,
-		killerCages: [KillerCage] = []
+		mistakeCount: Int
 	) {
 		self.id = id
 		self.createdAt = createdAt
@@ -57,7 +54,6 @@ struct SavedGame: Codable, Equatable {
 		self.current = current
 		self.elapsedSeconds = elapsedSeconds
 		self.mistakeCount = mistakeCount
-		self.killerCages = killerCages
 	}
 
 	init(from decoder: Decoder) throws {
@@ -72,7 +68,6 @@ struct SavedGame: Codable, Equatable {
 		current = try container.decode([[Int]].self, forKey: .current)
 		elapsedSeconds = try container.decode(Int.self, forKey: .elapsedSeconds)
 		mistakeCount = try container.decodeIfPresent(Int.self, forKey: .mistakeCount) ?? 0
-		killerCages = try container.decodeIfPresent([KillerCage].self, forKey: .killerCages) ?? []
 	}
 }
 

@@ -7,19 +7,7 @@
 
 struct NetworkPuzzle: Decodable {
 	let difficulty: SudokuDifficulty
+	let sourceDifficulty: SudokuDifficulty?
 	let puzzle: [[Int]]
 	let solution: [[Int]]
-}
-
-struct NetworkKillerCage: Decodable {
-	let id: Int
-	let sum: Int
-	let cells: [Int]
-}
-
-struct NetworkKillerPuzzle: Decodable {
-	let difficulty: SudokuDifficulty
-	let puzzle: [[Int]]
-	let solution: [[Int]]
-	let cages: [NetworkKillerCage]
 }
